@@ -19,7 +19,7 @@ namespace AudioPlayer
             }
             set
             {
-                if(value>_maxVolume)
+                if(value>_maxVolume)//value - значение которые используется в данном гетере/сетере, в данном случае volume
                 {
                     _volume = _maxVolume;
                 }
