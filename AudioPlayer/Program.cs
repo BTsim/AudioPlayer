@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Console;
 
 namespace AudioPlayer
 {
@@ -26,6 +27,24 @@ namespace AudioPlayer
             };
             var player = new Player();
             player.songs = new[] { song1, song2 };
+
+            while (true)
+            {
+                switch (ReadLine())
+                {
+                    case "up":
+                        player.VolumeUp();
+                        break;
+                    case "down":
+                        player.VolumeDown();
+                        break;
+                    case "play":
+                    player.Play();
+                        break;
+                }
+            }
+            
+            Console.ReadLine();
         }
     }
 }

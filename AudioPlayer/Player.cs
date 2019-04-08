@@ -8,9 +8,55 @@ namespace AudioPlayer
 {
     class Player
     {
-        int volume;
+        private int _volume;
+        private int _maxVolume = 100;
+        private int _minVolume = 0;
+        public int volume
+        {
+            get
+            {
+                return _volume;
+            }
+            set
+            {
+                if(value>_maxVolume)
+                {
+                    _volume = _maxVolume;
+                }
+                else if(value<_minVolume)
+                {
+                    _volume = _minVolume;
+                }
+                else
+                {
+                    _volume = value;
+                }
+            }
+
+        }
+        
         bool islock;
         public Song[] songs; //связь один ко многим
+
+        public void Play()
+        {
+            for (int i = 0; i < songs.Length; i++)
+            {
+                Console.WriteLine(songs[i].title);
+                System.Threading.Thread.Sleep(500);
+            }
+            
+        }
+        public void VolumeUp()
+        {
+            volume = volume + 1;
+            Console.WriteLine(volume);
+        }
+        public void VolumeDown()
+        {
+            volume = volume - 1;
+            Console.WriteLine(volume);
+        }
 
 
     }
