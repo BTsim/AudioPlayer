@@ -11,32 +11,17 @@ namespace AudioPlayer
     {
         static void Main(string[] args)
         {
-            var song1 = new Song
-            {
-                title = "Дым сигарет с ментолом",
-                duration = 300,
-                artist = new Artist
-
-                {
-                    name = "Нэнси"
-                }
-            };
-            var song2 = new Song
-            {
-                title = "Anaconda",
-                duration = 270,
-                artist = new Artist
-                {
-                    name = "Nicki Minaj"
-                }
-            };
-            var player = new Player
-            {
-                songs = new[] { song1, song2 }
-            };
+            int Min, Max, Total = 0;
+            var player = new Player();
+            var songs = CreateSongs(out Min, out Max, ref Total);
+            player.songs = songs;
+            int MinDuration;
+            int MaxDuration;
+            int TotalDuration;
+            Console.WriteLine($"{Min},{Max},{Total}");
 
             int i = 0;
-            while (i<2)
+            while (i < 2)
             {
                 switch (ReadLine())
                 {
@@ -47,7 +32,7 @@ namespace AudioPlayer
                         player.VolumeDown();
                         break;
                     case "play":
-                    player.Play();
+                        player.Play();
                         break;
                 }
                 i++;
@@ -57,9 +42,38 @@ namespace AudioPlayer
             player.Stop();
             player.Lock();
             player.Unlock();
-             
+
             Console.ReadLine();
-            
+
+        }
+
+        private static Song[] CreateSongs( out int Min, out int Max, ref int Total)
+        {
+            Random rand = new Random();
+            Song[] songs = new Song[5];
+            int MinDuration=0, MaxDuration=0, TotalDuration=0;
+            for (int i = 0; i < songs.Length; i++)
+            {
+                var song1 = new Song();
+                song1.Title = "Song" + i;
+                song1.Duration = rand.Next(3000);
+                song1.Artist = new Artist("Nensi");
+                songs[i] = song1;
+                TotalDuration = TotalDuration + song1.Duration;
+                if (MaxDuration < song1.Duration)
+                {
+                    MaxDuration = song1.Duration;
+                }
+                if (MinDuration>song1.Duration)
+                {
+                    MinDuration = song1.Duration;
+                }
+            }
+            Min = MinDuration;
+            Max = MaxDuration;
+            Total = TotalDuration;
+            return songs;
+          
         }
     }
 }

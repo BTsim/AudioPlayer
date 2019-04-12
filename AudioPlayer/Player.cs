@@ -55,7 +55,7 @@ namespace AudioPlayer
         {
             for (int i = 0; i < songs.Length; i++)
             {
-                Console.WriteLine(songs[i].title);
+                Console.WriteLine(songs[i].Title+" "+songs[i].Artist.Name);
                 System.Threading.Thread.Sleep(500);
             }
             
