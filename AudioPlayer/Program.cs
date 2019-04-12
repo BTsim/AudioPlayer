@@ -11,24 +11,32 @@ namespace AudioPlayer
     {
         static void Main(string[] args)
         {
-            var song1 = new Song();
-            song1.title = "Дым сигарет с ментолом";
-            song1.duration = 300;
-            song1.artist = new Artist
+            var song1 = new Song
             {
-                name = "Нэнси"
-            };
-            var song2 = new Song();
-            song2.title = "Anaconda";
-            song2.duration = 270;
-            song2.artist = new Artist
-            {
-                name = "Nicki Minaj"
-            };
-            var player = new Player();
-            player.songs = new[] { song1, song2 };
+                title = "Дым сигарет с ментолом",
+                duration = 300,
+                artist = new Artist
 
-            while (true)
+                {
+                    name = "Нэнси"
+                }
+            };
+            var song2 = new Song
+            {
+                title = "Anaconda",
+                duration = 270,
+                artist = new Artist
+                {
+                    name = "Nicki Minaj"
+                }
+            };
+            var player = new Player
+            {
+                songs = new[] { song1, song2 }
+            };
+
+            int i = 0;
+            while (i<2)
             {
                 switch (ReadLine())
                 {
@@ -42,9 +50,16 @@ namespace AudioPlayer
                     player.Play();
                         break;
                 }
+                i++;
             }
-            
+            player.VolumeChange(Convert.ToInt32(ReadLine()));
+            player.Start();
+            player.Stop();
+            player.Lock();
+            player.Unlock();
+             
             Console.ReadLine();
+            
         }
     }
 }
