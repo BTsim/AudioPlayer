@@ -10,9 +10,9 @@ namespace AudioPlayer
     {
         public int Duration;
         public string Title;
-        string Path;
-        string Lyrics;
-        string Genre;
+        public string Path;
+        public string Lyrics;
+        public string Genre;
         public Artist Artist;
         Album Album;
 

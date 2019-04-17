@@ -112,6 +112,8 @@ namespace AudioPlayer
             }
 
         }
-
+        public void Add(params Song[] songs)
+        {
+        }
     }
 }
