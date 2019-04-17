@@ -11,14 +11,14 @@ namespace AudioPlayer
     {
         static void Main(string[] args)
         {
-            int Min, Max, Total = 0;
+            int min, max, total = 0;
             var player = new Player();
-            var songs = CreateSongs(out Min, out Max, ref Total);
+            var songs = CreateSongs(out min, out max, ref total);
             player.songs = songs;
             int MinDuration;
             int MaxDuration;
             int TotalDuration;
-            Console.WriteLine($"{Min},{Max},{Total}");
+            Console.WriteLine($"{min},{max},{total}");
 
             int i = 0;
             while (i < 2)
@@ -47,7 +47,7 @@ namespace AudioPlayer
 
         }
 
-        private static Song[] CreateSongs( out int Min, out int Max, ref int Total)
+        private static Song[] CreateSongs( out int min, out int max, ref int total)
         {
             Random rand = new Random();
             Song[] songs = new Song[5];
@@ -69,9 +69,9 @@ namespace AudioPlayer
                     MinDuration = song1.Duration;
                 }
             }
-            Min = MinDuration;
-            Max = MaxDuration;
-            Total = TotalDuration;
+            min = MinDuration;
+            max = MaxDuration;
+            total = TotalDuration;
             return songs;
           
         }
