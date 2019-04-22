@@ -29,6 +29,13 @@ namespace AudioPlayer
                 songs[j]=song;
             }
             player.Add(songs);
+
+            AddArtist();
+            AddArtist("Name of artist");
+
+            AddAlbum();
+            AddAlbum(DateTime.Today.Year, "Name of album");
+            AddAlbum(name: "Name of album", year: (DateTime.Today.Year-1));
             //var songs = CreateSongs(out min, out max, ref total);
             //player.songs = songs;
             //int MinDuration;
@@ -122,12 +129,26 @@ namespace AudioPlayer
             return song4;
         }
         //refactoring 
-        public static Song CreateSong()
+        // public static Song CreateSong()
+        //{
+        //var song2 = new Song();
+        //CreateSong();
+        //return song2;
+        //}
+        public static Artist AddArtist(string name = "Unknown Artist")
         {
-            var song2 = new Song();
-            CreateSong();
-            return song2;
+            var artist = new Artist();
+            artist.Name = name;
+            WriteLine(artist.Name);
+            return artist;
         }
-
+        public static Album AddAlbum(int year = 0, string name = "Unknown Album")
+        {
+            var album = new Album();
+            album.Name = name;
+            album.Year = year;
+            WriteLine($"Name of album:{album.Name}, Year of album: {album.Year}");
+            return album;
+        }
     }
 }
