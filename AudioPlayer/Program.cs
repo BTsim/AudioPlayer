@@ -13,37 +13,20 @@ namespace AudioPlayer
         {
             int min, max, total = 0;
             var player = new Player();
-            CreateSong();
-            CreateSong("name of song3");
+            List<Song> songs = new List<Song>();
 
-            CreateSong(1500, "name of song4", "title of song4", "path of song4", "lyrics of song4", "genre of song 4");
-
-            player.Add(CreateSong("name of song"));
-
-            player.Add(CreateSong("name of song1"), CreateSong("name of song2"));
-
-            Song[] songs = new Song[10];
-            for (int j= 0; j < songs.Length; j++)
+            int i;
+            for (i = 0; i < 8; i++)
             {
-                var song =CreateSong("name of song" + (j + 1));
-                songs[j]=song;
+                var song = CreateSong("song " + (i + 1));
+                songs.Add(song);
             }
+
             player.Add(songs);
+            player.SortByTitle(songs);
+            player.Shuffle(songs);
 
-            AddArtist();
-            AddArtist("Name of artist");
-
-            AddAlbum();
-            AddAlbum(DateTime.Today.Year, "Name of album");
-            AddAlbum(name: "Name of album", year: (DateTime.Today.Year-1));
-            //var songs = CreateSongs(out min, out max, ref total);
-            //player.songs = songs;
-            //int MinDuration;
-            //int MaxDuration;
-            //int TotalDuration;
-            //Console.WriteLine($"{min},{max},{total}");
-
-            int i = 0;
+            i = 0;
             while (i < 2)
             {
                 switch (ReadLine())

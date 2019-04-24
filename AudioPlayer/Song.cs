@@ -14,7 +14,8 @@ namespace AudioPlayer
         public string Lyrics;
         public string Genre;
         public Artist Artist;
-        Album Album;
+        Album[] Album;
+        Playlist[] Playlist;
 
 
     }
