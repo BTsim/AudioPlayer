@@ -116,10 +116,18 @@ namespace AudioPlayer
         public void Play(bool loop = false)
         {
             int repeat;
-            repeat = loop == false ? 1 : 5;
+            repeat = loop == false ? 1 : songs.Count;
             for (int i = 0; i < repeat; i++)
             {
-                Console.WriteLine(songs[i].Title);
+                if (songs[i].like == true)
+                {
+                    Console.ForegroundColor = ConsoleColor.Green;
+                }
+                else if (songs[i].like==false)
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                }
+                Console.WriteLine(songs[i].Title+"Genre: "+songs[i].Genre);
                 System.Threading.Thread.Sleep(2000);
             }
         }
@@ -168,7 +176,7 @@ namespace AudioPlayer
 
         public void WriteLyrics(Song song)
         {
-            song.Title = song.Title.Length > 13 ? song.Title.Remove(13) + " ..." : song.Title;
+            song.Title = song.Title.Length > 13 ? song.Title.Remove(13, (song.Title.Length-13)) + " ..." : song.Title;
             Console.WriteLine(song.Title);
             if (song.Lyrics != null)
             {
@@ -178,6 +186,22 @@ namespace AudioPlayer
                     Console.WriteLine(massStringLyrics[i]);
                 }
             }
+        }
+
+        public void FilterByGenre(List<Song> songs, Song.Genres genreFilter)
+        {
+            List<Song> genreFilteredSongs=new List<Song>();
+            for (int i = 0; i < songs.Count; i++)
+            {
+                Song.Genres genreOfSong = songs[i].Genre;
+                if (genreFilter == genreOfSong)
+                {
+                    genreFilteredSongs.Add(songs[i]);
+                }
+
+            }
+
+            this.songs = genreFilteredSongs;
         }
     }
 }
