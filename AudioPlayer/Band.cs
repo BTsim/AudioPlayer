@@ -12,5 +12,6 @@ namespace AudioPlayer
         string Genre;
         int Year;
         bool Exist;
+        public Artist Artist;
     }
 }
