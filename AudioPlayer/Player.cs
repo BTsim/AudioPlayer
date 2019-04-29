@@ -47,7 +47,7 @@ namespace AudioPlayer
             } 
         }
         
-        bool Locked;
+        private bool Locked;
         
         public Song[] Songs; //связь один ко многим
 
@@ -112,7 +112,8 @@ namespace AudioPlayer
             }
 
         }
-        List<Song> songs = new List<Song>();
+        private List<Song> songs = new List<Song>();
+
         public void Play(bool loop = false)
         {
             int repeat;
@@ -203,5 +204,51 @@ namespace AudioPlayer
 
             this.songs = genreFilteredSongs;
         }
+
     }
+    static class ExtMethods
+    {
+        public static List<Song> ShuffleExtension(this List<Song> songs)
+        {
+            List<Song> songsNew = new List<Song>();
+            for (int i = 0; i < songs.Count; i++)
+            {
+                for (int j = 0; j < songs.Count; j++)
+                {
+                    songsNew.Add(songs[j]);
+                }
+            }
+
+            return songs = songsNew;
+        }
+
+        public static List<Song> SortByTitleExtension(this List<Song> songs)
+        {
+            var titleOfSongs = new List<string>();
+            foreach (Song song in songs)
+            {
+                string title = song.Title;
+                titleOfSongs.Add(title);
+            }
+            titleOfSongs.Sort();
+            var songsSortedTitle = new List<Song>();
+            for (int i = 0; i < titleOfSongs.Count; i++)
+            {
+                foreach (Song song in songs)
+                {
+                    if (titleOfSongs[i] == song.Title);
+                }
+            }
+
+            return songs = songsSortedTitle;
+        }
+
+        public static string TrimSongTitle(this string title)
+        {
+            title = title.Length > 13 ? title.Remove(13, (title.Length - 13)) : title;
+            return title;
+        }
+
+    }
+
 }

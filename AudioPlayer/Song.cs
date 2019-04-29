@@ -25,8 +25,8 @@ namespace AudioPlayer
         public Genres Genre;
         public Artist Artist;
         public bool? like=null;
-        Album[] Album;
-        Playlist[] Playlist;
+        public Album Album { get; set; }
+        private Playlist[] Playlist;
 
         public void Like()
         {
@@ -38,8 +38,15 @@ namespace AudioPlayer
             like = false;
         }
 
-
-
-
+        public void SongDeconstruct(out string title, out int min, out int sec, out string nameOfArtist,
+            out string album, out int year)
+        {
+            title = Title;
+            min = Duration / 60;
+            sec = Duration % 60;
+            nameOfArtist = Artist.Name;
+            album = Album.Name;
+            year = Album.Year;
+        }
     }
 }
