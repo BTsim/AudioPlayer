@@ -88,7 +88,7 @@ namespace AudioPlayer
             song2.Title = "Title of song2";
             song2.Path = "Path of song2";
             song2.Lyrics = "Lyrics of song2";
-            song2.Genre = "Genre of song 2";
+            song2.Genre = (Song.Genres) 1;
             return song2;
         }
         public static Song CreateSong(string nameOfSong3)
@@ -98,7 +98,7 @@ namespace AudioPlayer
             song3.Title = nameOfSong3;
             song3.Path = "Path of song3";
             song3.Lyrics = "Lyrics of song3";
-            song3.Genre = "Genre of song 3";
+            song3.Genre = (Song.Genres)2;
             return song3;
         }
         public static Song CreateSong(int durationOfSong4, string nameOfSong4, string titleOfSong4, string pathOfSong4, string lyricsOfSong4, string genreOfSong4)
@@ -108,7 +108,7 @@ namespace AudioPlayer
             song4.Title = nameOfSong4;
             song4.Path = pathOfSong4;
             song4.Lyrics = lyricsOfSong4;
-            song4.Genre = genreOfSong4;
+            song4.Genre = (Song.Genres)3;
             return song4;
         }
         //refactoring 

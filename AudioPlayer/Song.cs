@@ -38,7 +38,7 @@ namespace AudioPlayer
             like = false;
         }
 
-        public void SongDeconstruct(out string title, out int min, out int sec, out string nameOfArtist,
+        public void Deconstruct(out string title, out int min, out int sec, out string nameOfArtist,
             out string album, out int year)
         {
             title = Title;

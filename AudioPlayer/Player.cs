@@ -245,7 +245,7 @@ namespace AudioPlayer
 
         public static string TrimSongTitle(this string title)
         {
-            title = title.Length > 13 ? title.Remove(13, (title.Length - 13)) : title;
+            title = title?.Length > 13 ? title.Remove(13, (title.Length - 13)) : title;
             return title;
         }
 
