@@ -49,7 +49,13 @@ namespace AudioPlayer
         
         private bool Locked;
         
-        public Song[] Songs; //связь один ко многим
+        public Song[] Songs;
+
+        public Skin skin;
+        public Player(Skin skin)
+        {
+            this.skin = skin;
+        }
 
         public void Play()
         {
@@ -251,4 +257,72 @@ namespace AudioPlayer
 
     }
 
+    abstract class Skin
+
+    {
+
+        public abstract void Clear();
+
+        public abstract void Render(string text);
+
+    }
+
+    class ClassicSkin : Skin
+
+    {
+
+        public override void Clear()
+
+        {
+
+            Console.Clear();
+
+        }
+
+        public override void Render(string text)
+
+        {
+
+            Console.WriteLine(text);
+
+        }
+
+    }
+
+    class ColorSkin : Skin
+    {
+        public ConsoleColor colorText;
+        public ColorSkin(ConsoleColor color)
+        {
+            this.colorText = color;
+        }
+        public override void Clear()
+        {
+            Console.Clear();
+        }
+        public override void Render(string text)
+        {
+            Console.ForegroundColor = colorText;
+            Console.WriteLine(text);
+        }
+    }
+
+    class RandomSkin : Skin
+    {
+        public override void Clear()
+        {
+            Console.Clear();
+            for (int i = 0; i < 30; i++)
+            {
+                Console.Write((char)058D);
+            }
+            Console.WriteLine();
+        }
+        public override void Render(string text)
+        {
+            Random rand = new Random();
+            Console.ForegroundColor = (ConsoleColor)rand.Next(0, 15);
+            Console.WriteLine(text);
+        }
+    }
 }
