@@ -184,13 +184,13 @@ namespace AudioPlayer
         public void WriteLyrics(Song song)
         {
             song.Title = song.Title.Length > 13 ? song.Title.Remove(13, (song.Title.Length-13)) + " ..." : song.Title;
-            Console.WriteLine(song.Title);
+            skin.Render(song.Title);
             if (song.Lyrics != null)
             {
                 string[] massStringLyrics = song.Lyrics.Split(';');
                 for (int i = 0; i < massStringLyrics.Length; i++)
                 {
-                    Console.WriteLine(massStringLyrics[i]);
+                    skin.Render(massStringLyrics[i]);
                 }
             }
         }
