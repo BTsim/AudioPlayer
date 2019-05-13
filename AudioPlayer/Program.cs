@@ -12,7 +12,8 @@ namespace AudioPlayer
         static void Main(string[] args)
         {
             int min, max, total = 0;
-            var player = new Player();
+            Skin skin = new RandomSkin();
+            var player = new Player(skin);
             List<Song> songs = new List<Song>();
 
             int i;
@@ -23,34 +24,8 @@ namespace AudioPlayer
             }
 
             player.Add(songs);
-            player.SortByTitle(songs);
-            player.Shuffle(songs);
-
-            i = 0;
-            while (i < 2)
-            {
-                switch (ReadLine())
-                {
-                    case "up":
-                        player.VolumeUp();
-                        break;
-                    case "down":
-                        player.VolumeDown();
-                        break;
-                    case "play":
-                        player.Play();
-                        break;
-                }
-                i++;
-            }
-            //player.VolumeChange(Convert.ToInt32(ReadLine()));
-            //player.Start();
-            //player.Stop();
-            //player.Lock();
-            //player.Unlock();
-
-            Console.ReadLine();
-
+            Sort.SortByTitle(songs);
+            Shuffle.Shuffling(songs);
         }
 
         private static Song[] CreateSongs( out int min, out int max, ref int total)
@@ -120,14 +95,14 @@ namespace AudioPlayer
         //}
         public static Artist AddArtist(string name = "Unknown Artist")
         {
-            var artist = new Artist();
+            var artist = new Artist("Unknown Artist");
             artist.Name = name;
             WriteLine(artist.Name);
             return artist;
         }
         public static Album AddAlbum(int year = 0, string name = "Unknown Album")
         {
-            var album = new Album();
+            var album = new Album("Unknown Album", "Unknown year");
             album.Name = name;
             album.Year = year;
             WriteLine($"Name of album:{album.Name}, Year of album: {album.Year}");

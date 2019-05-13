@@ -8,10 +8,9 @@ namespace AudioPlayer
 {
     class Band
     {
-        string Title;
-        string Genre;
-        int Year;
-        bool Exist;
-        public Artist Artist;
+        string Title { get; set; }
+        string Genre { get; set; }
+        int Year { get; set; }
+        bool Exist { get; set; }
     }
 }

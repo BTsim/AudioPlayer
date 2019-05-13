@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 
 namespace AudioPlayer
 {
-    class Song
+    [Serializable]
+    public class Song
     {
+        private Genres _genre;
         public enum Genres
         {
             NoGenre=0,
@@ -18,24 +20,52 @@ namespace AudioPlayer
             HipHop=5,
         }
 
-        public int Duration;
-        public string Title;
-        public string Path;
-        public string Lyrics;
-        public Genres Genre;
-        public Artist Artist;
-        public bool? like=null;
+        public int Duration { get; set; }
+        public string Title { get; set; }
+        public string Path { get; set; }
+        public string Lyrics { get; set; }
+        public Artist Artist { get; set; }
         public Album Album { get; set; }
-        private Playlist[] Playlist;
-
-        public void Like()
+        public bool? Liked=null;
+        private bool _play;
+        public bool Play
         {
-            like=true;
+            get
+            {
+                return _play;
+            }
+            set
+            {
+                _play = value;
+            }
+        }
+        public string Genre
+        {
+            get { return _genre.ToString(); }
+            set
+            {
+                if (value != null)
+                {
+                    _genre = (Genres)Enum.Parse(typeof(Genres), value);
+                }
+                else
+                {
+                    value = "NotSpecified";
+                    _genre = (Genres)Enum.Parse(typeof(Genres), value);
+                }
+            }
         }
 
-        public void Dislike()
+        private Playlist[] Playlist;
+
+        public void Like(Song song)
         {
-            like = false;
+            song.Liked=true;
+        }
+
+        public static void Dislike(Song song)
+        {
+            song.Liked = false;
         }
 
         public void Deconstruct(out string title, out int min, out int sec, out string nameOfArtist,
