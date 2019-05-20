@@ -17,5 +17,9 @@ namespace AudioPlayer
             Name = name;
             Year = year;
         }
+        public Album()
+        {
+
+        }
     }
 }

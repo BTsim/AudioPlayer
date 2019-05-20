@@ -54,7 +54,7 @@ namespace AudioPlayer
 
 
 
-        public Skin skin;
+        public static Skin skin { get; set; }
         public Player(Skin skin)
         {
             Skin = skin;
@@ -196,14 +196,12 @@ namespace AudioPlayer
             {
                 Playlists = (List<Playlist>)xmlSerializer.Deserialize(fs);
             }
-            Skin.Render("Введите номер плейлиста для воспроизведения");
-            Skin.Render("");
+            Skin.Render("Enter the number of playlist for playing");
             int i = 1;
             foreach (var playlist in Playlists)
             {
                 Skin.Render($"{i}. {playlist.Title}");
             }
-            Skin.Render("");
             int number = int.Parse(Console.ReadLine());
             Songs = Playlists[number - 1].Songs;
         }

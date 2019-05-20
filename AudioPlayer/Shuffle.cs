@@ -14,7 +14,7 @@ namespace AudioPlayer
             List<Song> newSongs = new List<Song>();
             List<int> nums = new List<int>();
             int i = 0;
-            int j = 0;
+            //int j = 0;
             int k = 0;
             foreach (Song song in songs)
             {

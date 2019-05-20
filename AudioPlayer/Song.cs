@@ -12,12 +12,12 @@ namespace AudioPlayer
         private Genres _genre;
         public enum Genres
         {
-            NoGenre=0,
-            Pop=1,
-            Rap=2,
-            Rock=3,
-            Electro=4,
-            HipHop=5,
+            NoGenre,
+            Pop,
+            Rap,
+            Rock,
+            Electro,
+            HipHop,
         }
 
         public int Duration { get; set; }
@@ -50,13 +50,13 @@ namespace AudioPlayer
                 }
                 else
                 {
-                    value = "NotSpecified";
+                    value = "NoGenre";
                     _genre = (Genres)Enum.Parse(typeof(Genres), value);
                 }
             }
         }
 
-        private Playlist[] Playlist;
+        //private Playlist[] Playlist;
 
         public void Like(Song song)
         {

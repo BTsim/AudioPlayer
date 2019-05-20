@@ -16,5 +16,9 @@ namespace AudioPlayer
         {
             this.Name = name;
         }
+        public Artist()
+        {
+            Name = "Unknown name";
+        }
     }
 }
