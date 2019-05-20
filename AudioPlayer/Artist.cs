@@ -6,18 +6,19 @@ using System.Threading.Tasks;
 
 namespace AudioPlayer
 {
-    class Artist
+    [Serializable]
+    public class Artist
     {
-        public string Name;
-        public string Nickname;
-        public string Country;
-        public Artist()
-        {
-            this.Name = "Unknown artist";
-        }
+        public string Name { get; set; }
+        public string Nickname { get; set; }
+        public string Country { get; set; } 
         public Artist(string name)
         {
             this.Name = name;
+        }
+        public Artist()
+        {
+            Name = "Unknown name";
         }
     }
 }
