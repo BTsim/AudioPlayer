@@ -3,19 +3,46 @@ using System.Collections.Generic;
 using System.Xml.Serialization;
 using System.IO;
 using File = TagLib.File;
+using System.Media;
+using System.Threading;
+using System.Windows.Forms;
 
 namespace AudioPlayer
 {
-    class Player
+    public class Player: IDisposable
     {
-        public List<Playlist> Playlists { get; set; } = new List<Playlist>();
-        public static List<Song> Songs { get; set; } = new List<Song>();
+        public List<Playlist> Playlists { get; private set; } = new List<Playlist>();
+        public List<Song> Songs { get; set; } = new List<Song>();
         private static Skin Skin { get; set; }
         public static bool Loop { get; set; }
-        public bool Locked { get; set; }
-        private int _volume;
-        private int _maxVolume = 100;
-        private int _minVolume = 0;
+        private static string _path;
+        private bool _locked=false;
+        public bool Locked {
+            get
+            {
+                return _locked;
+            }
+            
+            set
+            {
+                _locked = value;
+            }
+        }
+
+        public event PlayerMessageHandler PlayerStarted;
+        public event PlayerMessageHandler PlayerStopped;
+        public event PlayerMessageHandler SongStarted;
+        public event PlayerMessageHandler SongsListChanged;
+        public event PlayerMessageHandler VolumeChanged;
+        public event PlayerMessageHandler PlayerLocked;
+        public event PlayerMessageHandler PlayerUnLocked;
+        public event PlayerMessageHandler PlaylistLoad;
+        public event PlayerMessageHandler PlaylistSave;
+
+        private static SoundPlayer _soundPlayer=new SoundPlayer();
+        private int _volume=50;
+        private readonly int _maxVolume = 100;
+        private readonly int _minVolume = 0;
         public int Volume
         {
             get
@@ -24,7 +51,7 @@ namespace AudioPlayer
             }
             set
             {
-                if (value > _maxVolume)//value - значение которые используется в данном гетере/сетере, в данном случае volume
+                if (value > _maxVolume)
                 {
                     _volume = _maxVolume;
                 }
@@ -39,102 +66,60 @@ namespace AudioPlayer
             }
 
         }
-        private bool _playing;
-        public bool Playing
-        {
-            get
-            {
-                return _playing;
-            }
-            private set
-            {
-                _playing = value;
-            }
-        }
-
-
-
+        private bool _disposed = false;
         public static Skin skin { get; set; }
         public Player(Skin skin)
         {
             Skin = skin;
         }
 
-        public void Play(List<Song> songs, bool loop)
+        public void Play(Song song)
         {
-            foreach (Song song in songs)
-            {
-                if (loop == true)
-                {
-                    for (int i = 0; i < 2; i++)
-                    {
-                        song.Play = true;
-                        Player.WriteSongsList(songs);
-                    }
-                }
-                else
-                {
-                    song.Play = true;
-                    Player.WriteSongsList(songs);
-                    song.Play = false;
-                    Console.ReadLine();
-                }
-            }
-            
+            _soundPlayer.SoundLocation = song.Path;
+            _soundPlayer.Play();
         }
-
         public void VolumeUp()
         {
-            Volume = Volume + 1;
-            Console.WriteLine("Volume icreased at 1. Current volume: " + Volume);
+            Volume += 1;
+            VolumeChanged(this, new PlayerEventArgs() { Message = "Volume turned up. New volume: " + Volume });
         }
         public void VolumeDown()
         {
-            Volume = Volume - 1;
-            Console.WriteLine("Volume decreased at 1. Current volume: " + Volume);
+            Volume -= 1;
+            VolumeChanged(this, new PlayerEventArgs() { Message = "Volume turned down. New volume: " + Volume });
         }
         public void VolumeChange(int volume_step)
         {
-            Volume = Volume + volume_step;
+            Volume += volume_step;
             if (volume_step > 0)
             {
-                Console.WriteLine("Volume icreased at " + volume_step + ". Current volume: " + Volume);
+                VolumeChanged(this, new PlayerEventArgs() { Message = "Volume turned up. New volume: " + Volume });
             }
             if (volume_step < 0)
             {
-                Console.WriteLine("Volume decreased at " + volume_step + ". Current volume: " + Volume);
+                VolumeChanged(this, new PlayerEventArgs() { Message = "Volume turned down. New volume: " + Volume });
             }
         }
         public void Lock()
         {
             Locked = true;
-            Console.WriteLine("Player locked");
+            PlayerLocked?.Invoke(this, new PlayerEventArgs() { Message = "Player locked" });
         }
         public void Unlock()
         {
             Locked = false;
-            Console.WriteLine("Player unlocked");
+            PlayerUnLocked?.Invoke(this, new PlayerEventArgs() { Message = "Player unlocked" });
+
 
         }
         public void Stop()
         {
-            if (Locked == false)
-            {
-                Playing = false;
-                Console.WriteLine("Stop");
 
-            }
-        }
-        public void Start()
-        {
-            if (Locked == false)
-            {
-                Playing = true;
-                Console.WriteLine("Playing");
-
-            }
+            _soundPlayer.Stop();
+            PlayerStopped(this, new PlayerEventArgs() { Message = "Player stopped" });
 
         }
+        
         public static void WriteSongsList(List<Song> songs)
         {
             foreach (Song song in songs)
@@ -171,12 +156,25 @@ namespace AudioPlayer
             Console.WriteLine();
         }
 
+        private static void GetPath()
+        {
+            using (FolderBrowserDialog folder = new FolderBrowserDialog())
+            {
+                if (folder.ShowDialog() == DialogResult.OK)
+                {
+                    _path = folder.SelectedPath;
+                }
+            }
+        }
         public void Load()
         {
+            PlayerStarted?.Invoke(this, new PlayerEventArgs { Message = "Enter the way to folder with music" });
             List<FileInfo> fileInfos = new List<FileInfo>();
-            Skin.Render("Enter the way to folder with music");
-            string path = Console.ReadLine();
-            DirectoryInfo directoryInfo = new DirectoryInfo(path);
+            Thread thread = new Thread(GetPath);
+            thread.SetApartmentState(ApartmentState.STA);
+            thread.Start();
+            thread.Join();
+            DirectoryInfo directoryInfo = new DirectoryInfo(_path);
             foreach (var file in directoryInfo.GetFiles("*.wav"))
             {
                 fileInfos.Add(file);
@@ -186,6 +184,7 @@ namespace AudioPlayer
                 var audio = File.Create(file.FullName);
                 Songs.Add(new Song() { Album = new Album(audio?.Tag.Album, (int)audio.Tag?.Year), Artist = new Artist(audio.Tag?.FirstPerformer), Duration = (int)audio.Properties.Duration.TotalSeconds, Genre = audio.Tag?.FirstGenre, Lyrics = audio.Tag?.Lyrics, Title = audio.Tag?.Title, Path = audio.Name });
             }
+            SongsListChanged?.Invoke(this, new PlayerEventArgs() { Message = "New playlist loaded" });
 
         }
 
@@ -196,7 +195,7 @@ namespace AudioPlayer
             {
                 Playlists = (List<Playlist>)xmlSerializer.Deserialize(fs);
             }
-            Skin.Render("Enter the number of playlist for playing");
+            PlaylistLoad?.Invoke(this, new PlayerEventArgs() { Message = "Enter the number of playlist for playing" });
             int i = 1;
             foreach (var playlist in Playlists)
             {
@@ -204,11 +203,12 @@ namespace AudioPlayer
             }
             int number = int.Parse(Console.ReadLine());
             Songs = Playlists[number - 1].Songs;
+            PlaylistLoad?.Invoke(this, new PlayerEventArgs() { Message = "Playlis loaded" });
         }
 
         public void SaveAsPlaylist()
         {
-            Skin.Render("Enter the name of playlist");
+            PlaylistSave(this, new PlayerEventArgs() { Message = "Enter the name of playlist" });
             Playlist playlist = new Playlist(Console.ReadLine(), Songs);
             Playlists.Add(playlist);
             XmlSerializer xmlSerializer = new XmlSerializer(Playlists.GetType());
@@ -217,6 +217,7 @@ namespace AudioPlayer
                 playlist.Path = fs.Name;
                 xmlSerializer.Serialize(fs, Playlists);
             }
+            PlaylistSave(this, new PlayerEventArgs() { Message = "Playlist saved" });
         }
 
         public void Clear()
@@ -251,6 +252,33 @@ namespace AudioPlayer
             }
             return filteredSongs;
         }
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+        protected virtual void Dispose(bool isDispose)
+        {
+            if (!_disposed)
+            {
+                if (isDispose)
+                {
+                    _soundPlayer = null;
+                    Playlists = null;
+                    Songs = null;
+                    Skin = null;
+                }
+                _soundPlayer.Dispose();
+                _soundPlayer = null;
+                _disposed = true;
+            }
+        }
+        ~Player()
+        {
+            Dispose(false);
+        }
+
+        public delegate void PlayerMessageHandler(Player player, PlayerEventArgs arg);
 
     }
     static class ExtMethods
@@ -296,4 +324,5 @@ namespace AudioPlayer
             return title;
         }
     }
+
 }
