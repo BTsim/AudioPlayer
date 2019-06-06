@@ -1,121 +1,196 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static System.Console;
 
 namespace AudioPlayer
 {
     class Program
     {
+        private static Skin _skin;
+        private static Player _player;
         static void Main(string[] args)
         {
-            Skin skin = new RandomSkin();
-            var player = new Player(skin);
-            player.Load();
-            player.Play(Player.Songs, false);
-            player.SaveAsPlaylist();
-            player.LoadPlayList();
-           
-            Console.ReadLine();
+            _skin = new ClassicSkin();
+            _player = new Player(_skin);
 
-            //    int min, max, total = 0;
-            //    
-            //    List<Song> songs = new List<Song>();
+            
+            _player.PlayerStarted += (Player, arg) =>{_skin.Render(arg.Message);};
+            _player.PlayerStopped += (Player, arg) => { _skin.Render(arg.Message);};
+            _player.PlayerLocked += (Player, arg) => { _skin.Render(arg.Message);};
+            _player.PlayerUnLocked += (Player, arg) => { _skin.Render(arg.Message);};
+            _player.SongStarted += (Player, arg) => { _skin.Render(arg.Message);};
+            _player.SongsListChanged += (Player, arg) => { _skin.Render(arg.Message);};
+            _player.VolumeChanged += (Player, arg) => { _skin.Render(arg.Message);};
+            PlayerStatus();
+            _player.Load();
+            Here:
+            Navigation();
+            int j = 0;
+            while (j == 0)
+            {
+                if (_player.Locked==false)
+                {
+                    switch (Console.ReadKey(true).Key)
+                    {
+                        case ConsoleKey.P:
+                        {
+                            try
+                            {
+                                _skin.Render("Enter the song number");
+                                int number = int.Parse(Console.ReadLine());
+                                _player.Songs[number - 1].Play = true;
+                                _player.Play(_player.Songs[number - 1]);
+                                _player.Songs[number - 1].Play = false;
+                            }
+                            catch (Exception arg)
+                            {
+                                _skin.Render(arg.Message);
+                            }
+                            break;
+                        }
+                        case ConsoleKey.A:
+                        {
+                            foreach (var song in _player.Songs)
+                            {
+                                song.Play = true;
+                                _player.Play(song);
+                                song.Play = false;
+                            }
+                            break;
+                        }
+                        case ConsoleKey.S:
+                        {
+                            _player.Stop();
+                            break;
+                        }
+                        case ConsoleKey.Add:
+                        {
+                            _player.VolumeUp();
+                            break;
+                        }
+                        case ConsoleKey.Subtract:
+                        {
+                            _player.VolumeDown();
+                            break;
+                        }
+                        case ConsoleKey.L:
+                        {
+                            _player.Lock();
+                            Console.WriteLine();
+                            break;
+                        }
+                        case ConsoleKey.C:
+                        {
+                            _player.Clear();
+                            break;
+                        }
+                        case ConsoleKey.F1:
+                        {
+                            _player.LoadPlayList();
+                            CurrentPlaylist();
+                            break;
+                        }
+                        case ConsoleKey.F2:
+                        {
+                            _player.SaveAsPlaylist();
+                            CurrentPlaylist();
+                            break;
+                        }
+                        case ConsoleKey.Escape:
+                        {
+                            j++;
+                            Navigation();
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    switch (Console.ReadKey(true).Key)
+                    {
+                        case ConsoleKey.U:
+                            {
+                                _player.Unlock();
+                                goto Here;
+                            }
+                    }
+                }
 
-            //    int i;
-            //    for (i = 0; i < 8; i++)
-            //    {
-            //        var song = CreateSong("song " + (i + 1));
-            //        songs.Add(song);
-            //    }
+            }
+        }
+        private static void PlayerStatus()
+        {
+            if (_player.Locked)
+            {
+                _skin.Render("Player locked");
+                _skin.Render($"Volume: {_player.Volume}");
+                Console.WriteLine();
+            }
+            else
+            {
+                _skin.Render("Player unlocked");
+                _skin.Render($"Volume: {_player.Volume}");
+                Console.WriteLine();
+            }
+        }
 
-            //    player.Add(songs);
-            //    Sort.SortByTitle(songs);
-            //    Shuffle.Shuffling(songs);
-            //}
+        private static void Navigation()
+        {
+            _skin.Render("Navigation in player:");
+            _skin.Render("P - play song");
+            _skin.Render("A - play all songs");
+            _skin.Render("S - stop playing");
+            _skin.Render("+ - volume up");
+            _skin.Render("- - volume down");
+            _skin.Render("L - lock player");
+            _skin.Render("U - unlock player");
+            _skin.Render("C - clear playlist");
+            _skin.Render("F1 - load playlist");
+            _skin.Render("F2 - save playlist");
+            _skin.Render("ESC - close player");
+            Console.WriteLine();
+        }
 
-            //private static Song[] CreateSongs( out int min, out int max, ref int total)
-            //{
-            //    Random rand = new Random();
-            //    Song[] songs = new Song[5];
-            //    int MinDuration=0, MaxDuration=0, TotalDuration=0;
-            //    for (int i = 0; i < songs.Length; i++)
-            //    {
-            //        var song1 = new Song();
-            //        song1.Title = "Song" + i;
-            //        song1.Duration = rand.Next(3000);
-            //        song1.Artist = new Artist("Nensi");
-            //        songs[i] = song1;
-            //        TotalDuration = TotalDuration + song1.Duration;
-            //        if (MaxDuration < song1.Duration)
-            //        {
-            //            MaxDuration = song1.Duration;
-            //        }
-            //        if (MinDuration>song1.Duration)
-            //        {
-            //            MinDuration = song1.Duration;
-            //        }
-            //    }
-            //    min = MinDuration;
-            //    max = MaxDuration;
-            //    total = TotalDuration;
-            //    return songs;
+        private static void CurrentPlaylist()
+        {
+            int i = 0;
+            _skin.Render("Current playlist:");
+            foreach (var song in _player.Songs)
+            {
+                if (song.Artist.Name == null)
+                {
+                    song.Artist.Name = "Unknwon artist";
+                }
 
-            //}
-            //public static Song CreateSong()
-            //{
-            //    var song2 = new Song();
-            //    song2.Duration = 500;
-            //    song2.Title = "Title of song2";
-            //    song2.Path = "Path of song2";
-            //    song2.Lyrics = "Lyrics of song2";
-            //    song2.Genre = (Song.Genres) 1;
-            //    return song2;
-            //}
-            //public static Song CreateSong(string nameOfSong3)
-            //{
-            //    var song3 = new Song();
-            //    song3.Duration = 1000;
-            //    song3.Title = nameOfSong3;
-            //    song3.Path = "Path of song3";
-            //    song3.Lyrics = "Lyrics of song3";
-            //    song3.Genre = (Song.Genres)2;
-            //    return song3;
-            //}
-            //public static Song CreateSong(int durationOfSong4, string nameOfSong4, string titleOfSong4, string pathOfSong4, string lyricsOfSong4, string genreOfSong4)
-            //{
-            //    var song4 = new Song();
-            //    song4.Duration = durationOfSong4;
-            //    song4.Title = nameOfSong4;
-            //    song4.Path = pathOfSong4;
-            //    song4.Lyrics = lyricsOfSong4;
-            //    song4.Genre = (Song.Genres)3;
-            //    return song4;
-            //}
-            //refactoring 
-            // public static Song CreateSong()
-            //{
-            //var song2 = new Song();
-            //CreateSong();
-            //return song2;
-            //}
-            //public static Artist AddArtist(string name = "Unknown Artist")
-            //{
-            //    var artist = new Artist("Unknown Artist");
-            //    artist.Name = name;
-            //    WriteLine(artist.Name);
-            //    return artist;
-            //}
-            //public static Album AddAlbum(int year = 0, string name = "Unknown Album")
-            //{
-            //    var album = new Album("Unknown Album", "Unknown year");
-            //    album.Name = name;
-            //    album.Year = year;
-            //    WriteLine($"Name of album:{album.Name}, Year of album: {album.Year}");
-            //    return album;
-            //
+                if (song.Title == null)
+                {
+                    song.Title = "No title";
+                }
+                i++;
+
+                if (song.Play)
+                {
+                    _skin.Render($"{i}. {song.Artist.Name} - {song.Title}" + "" + "- Playing now");
+                }
+
+                else if (song.Liked.HasValue)
+                {
+                    if (song.Liked == true)
+                    {
+                        _skin.Render($"{i}. {song.Artist.Name} - {song.Title}" + "" + "- Liked");
+                    }
+
+                    else
+                    {
+                        _skin.Render($"{i}. {song.Artist.Name} - {song.Title}" + "" + "- Disliked");
+                    }
+                }
+
+                else
+                {
+                    _skin.Render($"{i}. {song.Artist.Name} - {song.Title}" + "" + "- Undefined");
+                }
+                Console.WriteLine();
+
+            }
         }
     }
 }
